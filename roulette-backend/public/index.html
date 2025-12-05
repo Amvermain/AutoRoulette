@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>룰렛 설정 관리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .prizes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .prize-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .prize-item input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .prize-item input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .prize-item button {
+            padding: 12px 16px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .prize-item button:hover {
+            background: #ff3838;
+        }
+
+        .add-prize-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f0f0f0;
+            color: #333;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .add-prize-btn:hover {
+            background: #e0e0e0;
+            border-color: #999;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button.primary {
+            flex: 1;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button.secondary {
+            flex: 1;
+            padding: 14px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button.secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box p {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎰 룰렛 설정 관리</h1>
+        <p class="subtitle">룰렛의 꽝 갯수, 상품, 도네이션 금액을 설정할 수 있습니다.</p>
+
+        <div class="info-box">
+            <p>💡 설정을 변경한 후 <strong>저장</strong> 버튼을 클릭하면 다음 룰렛부터 적용됩니다.</p>
+        </div>
+
+        <form id="settingsForm">
+            <div class="form-group">
+                <label for="dudCount">꽝 갯수</label>
+                <input type="number" id="dudCount" name="dudCount" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="donationAmount">도네이션 금액 (원)</label>
+                <input type="number" id="donationAmount" name="donationAmount" min="0" step="100" required>
+            </div>
+
+            <div class="form-group">
+                <label>상품 목록</label>
+                <div class="prizes-container" id="prizesContainer">
+                </div>
+                <button type="button" class="add-prize-btn" onclick="addPrize()">+ 상품 추가</button>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="secondary" onclick="loadSettings()">새로고침</button>
+                <button type="submit" class="primary">저장</button>
+            </div>
+        </form>
+
+        <div id="statusMessage" class="status-message"></div>
+    </div>
+
+    <script>
+        const API_BASE = '/settings';
+
+        async function loadSettings() {
+            try {
+                document.querySelector('.container').classList.add('loading');
+                const response = await fetch(API_BASE);
+                if (!response.ok) throw new Error('설정을 불러오는데 실패했습니다.');
+
+                const settings = await response.json();
+
+                document.getElementById('dudCount').value = settings.dudCount;
+                document.getElementById('donationAmount').value = settings.donationAmount;
+
+                const container = document.getElementById('prizesContainer');
+                container.innerHTML = '';
+                settings.prizes.forEach(prize => {
+                    addPrize(prize);
+                });
+
+                showMessage('설정을 불러왔습니다.', 'success');
+            } catch (error) {
+                showMessage(error.message, 'error');
+            } finally {
+                document.querySelector('.container').classList.remove('loading');
+            }
+        }
+
+        function addPrize(value = '') {
+            const container = document.getElementById('prizesContainer');
+            const prizeItem = document.createElement('div');
+            prizeItem.className = 'prize-item';
+            prizeItem.innerHTML = `
+                <input type="text" value="${value}" placeholder="상품명 입력" required>
+                <button type="button" onclick="this.parentElement.remove()">삭제</button>
+            `;
+            container.appendChild(prizeItem);
+        }
+
+        async function saveSettings(e) {
+            e.preventDefault();
+
+            try {
+                document.querySelector('.container').classList.add('loading');
+
+                const dudCount = parseInt(document.getElementById('dudCount').value);
+                const donationAmount = parseInt(document.getElementById('donationAmount').value);
+
+                const prizeInputs = document.querySelectorAll('.prize-item input');
+                const prizes = Array.from(prizeInputs).map(input => input.value.trim()).filter(v => v);
+
+                if (prizes.length === 0) {
+                    throw new Error('최소 1개 이상의 상품을 입력해주세요.');
+                }
+
+                const response = await fetch(API_BASE, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ dudCount, prizes, donationAmount }),
+                });
+
+                if (!response.ok) throw new Error('설정 저장에 실패했습니다.');
+
+                await loadSettings();
+                showMessage('설정이 저장되었습니다!', 'success');
+            } catch (error) {
+                showMessage(error.message, 'error');
+            } finally {
+                document.querySelector('.container').classList.remove('loading');
+            }
+        }
+
+        function showMessage(message, type) {
+            const messageEl = document.getElementById('statusMessage');
+            messageEl.textContent = message;
+            messageEl.className = `status-message ${type}`;
+            messageEl.style.display = 'block';
+
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 3000);
+        }
+
+        document.getElementById('settingsForm').addEventListener('submit', saveSettings);
+
+        loadSettings();
+    </script>
+</body>
+</html>
