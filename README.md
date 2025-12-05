@@ -19,7 +19,7 @@
 
 ## 🚀 빠른 시작
 
-### 1. 프로젝트 클론
+### 1. 프로젝트 클론(GIT에서 Download ZIP으로 대체 가능)
 
 ```bash
 git clone <repository-url>

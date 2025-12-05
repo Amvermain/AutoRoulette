@@ -56,12 +56,28 @@ manager.onStartRoulette = async (job) => {
 };
 
 manager.onShowResult = (job, result) => {
-    // 예: 화면에 결과 표시
-    //   alert(`Donation from ${job.donation.nickname} result: ${result}`);
+    const resultDisplay = document.getElementById('resultDisplay');
+    const resultPrize = resultDisplay?.querySelector('.result-prize');
+    const resultDonor = resultDisplay?.querySelector('.result-donor');
+
+    if (resultDisplay && resultPrize && resultDonor) {
+        // Set content
+        resultPrize.textContent = result;
+        resultDonor.textContent = `🎁 ${job.donation.nickname}님`;
+
+        // Show the result
+        resultDisplay.classList.remove('hidden');
+    }
 };
 
 manager.onClearScreen = () => {
     document.getElementsByTagName('canvas')[0].style.display = 'none';
+
+    // Hide result display
+    const resultDisplay = document.getElementById('resultDisplay');
+    if (resultDisplay) {
+        resultDisplay.classList.add('hidden');
+    }
 }
 // 필요하다면 onClearScreen 정의
 
