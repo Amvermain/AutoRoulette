@@ -12,9 +12,10 @@ services:
       - PORT=3000
       - NID_AUT=${NID_AUT}
       - NID_SES=${NID_SES}
+      - CHANNEL_ID=${CHANNEL_ID}
     volumes:
       - ./data:/app/data
-      - roulette-db:/app
+      - ./roulette-backend/roulette.db:/app/roulette.db  # ✅ DB만 바인드 마운트
     restart: unless-stopped
     networks:
       - roulette-network
@@ -31,9 +32,6 @@ services:
     restart: unless-stopped
     networks:
       - roulette-network
-
-volumes:
-  roulette-db:
 
 networks:
   roulette-network:

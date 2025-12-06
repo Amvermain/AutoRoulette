@@ -8,8 +8,12 @@ export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
   @Get()
-  async getSettings(): Promise<Settings> {
-    return this.settingsService.getSettings();
+  async getSettings(): Promise<Settings & { channelId: string }> {
+    const settings = await this.settingsService.getSettings();
+    return {
+      ...settings,
+      channelId: process.env.CHANNEL_ID || 'Not configured',
+    };
   }
 
   @Put()

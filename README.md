@@ -34,11 +34,12 @@ cd AutoRoulette
 cp .env.example .env
 ```
 
-`.env` 파일을 열어서 치지직 인증 토큰을 입력합니다:
+`.env` 파일을 열어서 치지직 인증 토큰과 채널 ID를 입력합니다:
 
 ```env
 NID_AUT=your_actual_nid_aut_token
 NID_SES=your_actual_nid_ses_token
+CHANNEL_ID=your_channel_id_here
 ```
 
 #### 치지직 토큰 얻는 방법
@@ -48,6 +49,13 @@ NID_SES=your_actual_nid_ses_token
 3. **Application** 탭 > **Cookies** > `https://chzzk.naver.com` 선택
 4. `NID_AUT`와 `NID_SES` 쿠키의 Value 복사
 5. `.env` 파일에 붙여넣기
+
+#### 채널 ID 얻는 방법
+
+1. 브라우저에서 룰렛을 실행할 치지직 채널 페이지로 이동
+2. 주소창의 URL에서 채널 ID 복사
+   - 예: `https://chzzk.naver.com/live/abc123def456` → `abc123def456`
+3. `.env` 파일의 `CHANNEL_ID`에 붙여넣기
 
 ### 3. Docker로 실행
 
