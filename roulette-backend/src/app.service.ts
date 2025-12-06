@@ -24,7 +24,7 @@ export class AppService {
     console.log(channel)
 
     const chzzkChat = client.chat({
-      channelId: "adbebe35927f8356b3770a70e8c24364",
+      channelId: process.env.CHANNEL_ID!,
       pollInterval: 30*1000
     })
 
@@ -49,12 +49,16 @@ export class AppService {
     chzzkChat.on('donation', async (donation) => {
       console.log('Donation received:', donation);
       const settings = await this.settingsService.getSettings();
-      if (donation.extras.payAmount == settings.donationAmount) {
+
+      // Check if roulette is active and donation amount matches
+      if (settings.isActive && donation.extras.payAmount == settings.donationAmount) {
         this.rouletteGateway.emitDonation({
           nickname: donation.profile?.nickname?? "익명",
           amount: donation.extras.payAmount,
           message: donation.message,
         })
+      } else if (!settings.isActive) {
+        console.log('Roulette is currently disabled. Donation ignored.');
       }
     })
 

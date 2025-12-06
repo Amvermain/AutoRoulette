@@ -13,4 +13,7 @@ export class Settings {
 
   @Column({ default: 5000 })
   donationAmount: number;
+
+  @Column({ default: true })
+  isActive: boolean;
 }

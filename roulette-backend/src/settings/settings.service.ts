@@ -19,6 +19,7 @@ export class SettingsService implements OnModuleInit {
         dudCount: 40,
         prizes: ['노래', '대사', '방제', '게임권'],
         donationAmount: 5000,
+        isActive: true,
       });
       await this.settingsRepository.save(defaultSettings);
     }
@@ -43,6 +44,9 @@ export class SettingsService implements OnModuleInit {
     }
     if (updateSettingsDto.donationAmount !== undefined) {
       settings.donationAmount = updateSettingsDto.donationAmount;
+    }
+    if (updateSettingsDto.isActive !== undefined) {
+      settings.isActive = updateSettingsDto.isActive;
     }
 
     return this.settingsRepository.save(settings);
