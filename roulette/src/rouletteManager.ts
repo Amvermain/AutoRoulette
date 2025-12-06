@@ -23,16 +23,18 @@ export class RouletteManager {
 
   private queue: RouletteJob[] = [];
   private state: RouletteState = 'IDLE';
+  private currentJob: RouletteJob | null = null;
 
   // 결과를 얼마나 보여줄지 (ms)
   private resultDisplayDuration = 7000; // 7초 정도
 
   // 외부에서 실제 roulette 엔진을 실행하기 위해 주입받는 콜백들
   // 실제 게임 코드에 맞게 타입/인자 바꿔 쓰면 됨
-  onStartRoulette: ((job: RouletteJob) => Promise<void> | void) | null = null;
+  onStartRoulette: ((job: RouletteJob) => Promise<string> | void) | null = null;
   onStopRoulette: (() => void) | null = null;
   onShowResult: ((job: RouletteJob, result: any) => void) | null = null;
   onClearScreen: (() => void) | null = null;
+  onQueueUpdate: (() => void) | null = null;
 
   init() {
     const socket = getSocket();
@@ -48,7 +50,22 @@ export class RouletteManager {
       donation,
     };
     this.queue.push(job);
+    this.notifyQueueUpdate();
     this.tryRunNext();
+  }
+
+  public getCurrentJob(): RouletteJob | null {
+    return this.currentJob;
+  }
+
+  public getQueue(): RouletteJob[] {
+    return [...this.queue];
+  }
+
+  private notifyQueueUpdate() {
+    if (this.onQueueUpdate) {
+      this.onQueueUpdate();
+    }
   }
 
   private async tryRunNext() {
@@ -58,7 +75,10 @@ export class RouletteManager {
     console.log('[RouletteManager] current queue', this.queue);
     if (!next) return;
 
+    this.currentJob = next;
     this.state = 'RUNNING';
+    this.notifyQueueUpdate();
+
     try {
       if (this.onStartRoulette) {
         // 실제 roulette 엔진 실행
@@ -71,7 +91,9 @@ export class RouletteManager {
     } catch (err) {
       console.error('[RouletteManager] error while running roulette', err);
     } finally {
+      this.currentJob = null;
       this.state = 'IDLE';
+      this.notifyQueueUpdate();
       // 다음 큐 처리
       this.tryRunNext();
     }
@@ -100,10 +122,18 @@ export class RouletteManager {
 
   private async showResult(job: RouletteJob, result: any) {
     this.state = 'SHOWING_RESULT';
-    if (this.onShowResult) {
-      this.onShowResult(job, result);
+
+    // "꽝"이 아닐 때만 결과 표시
+    if (result !== "꽝") {
+      if (this.onShowResult) {
+        this.onShowResult(job, result);
+      }
+      await new Promise((res) => setTimeout(res, this.resultDisplayDuration));
+    } else {
+      // "꽝"일 때는 짧은 대기 후 바로 다음으로
+      await new Promise((res) => setTimeout(res, 1000)); // 1초만 대기
     }
-    await new Promise((res) => setTimeout(res, this.resultDisplayDuration));
+
     if (this.onClearScreen) {
       this.onClearScreen();
     }

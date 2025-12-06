@@ -16,4 +16,7 @@ export class Settings {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ default: false })
+  allowMultipleDonation: boolean;
 }

@@ -3,4 +3,5 @@ export class UpdateSettingsDto {
   prizes?: string[];
   donationAmount?: number;
   isActive?: boolean;
+  allowMultipleDonation?: boolean;
 }

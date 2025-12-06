@@ -20,6 +20,7 @@ export class SettingsService implements OnModuleInit {
         prizes: ['노래', '대사', '방제', '게임권'],
         donationAmount: 5000,
         isActive: true,
+        allowMultipleDonation: false,
       });
       await this.settingsRepository.save(defaultSettings);
     }
@@ -47,6 +48,9 @@ export class SettingsService implements OnModuleInit {
     }
     if (updateSettingsDto.isActive !== undefined) {
       settings.isActive = updateSettingsDto.isActive;
+    }
+    if (updateSettingsDto.allowMultipleDonation !== undefined) {
+      settings.allowMultipleDonation = updateSettingsDto.allowMultipleDonation;
     }
 
     return this.settingsRepository.save(settings);

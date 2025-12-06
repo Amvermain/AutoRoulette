@@ -238,16 +238,16 @@ export class Roulette extends EventTarget {
 
     this.addUiObject(new RankRenderer());
     this.attachEvent();
-    const minimap = new Minimap();
-    minimap.onViewportChange((pos) => {
-      if (pos) {
-        this._camera.setPosition(pos, false);
-        this._camera.lock(true);
-      } else {
-        this._camera.lock(false);
-      }
-    });
-    this.addUiObject(minimap);
+    // const minimap = new Minimap();
+    // minimap.onViewportChange((pos) => {
+    //   if (pos) {
+    //     this._camera.setPosition(pos, false);
+    //     this._camera.lock(true);
+    //   } else {
+    //     this._camera.lock(false);
+    //   }
+    // });
+    // this.addUiObject(minimap);
     this.fastForwarder = new FastForwader();
     this.addUiObject(this.fastForwarder);
     this._stage = stages[0];

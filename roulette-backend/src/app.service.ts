@@ -50,16 +50,44 @@ export class AppService {
       console.log('Donation received:', donation);
       const settings = await this.settingsService.getSettings();
 
-      // Check if roulette is active and donation amount matches
-      if (settings.isActive && donation.extras.payAmount == settings.donationAmount) {
+      // Check if roulette is active
+      if (!settings.isActive) {
+        console.log('Roulette is currently disabled. Donation ignored.');
+        return;
+      }
+
+      const donationAmount = donation.extras.payAmount;
+      const baseAmount = settings.donationAmount;
+      let count = 0;
+
+      if (settings.allowMultipleDonation) {
+        // Allow multiples of the base amount
+        if (donationAmount % baseAmount === 0) {
+          count = Math.floor(donationAmount / baseAmount);
+          console.log(`Multiple donation allowed: ${donationAmount} / ${baseAmount} = ${count} times`);
+        } else {
+          console.log(`Donation amount ${donationAmount} is not a multiple of ${baseAmount}. Donation ignored.`);
+          return;
+        }
+      } else {
+        // Only allow exact match
+        if (donationAmount === baseAmount) {
+          count = 1;
+        } else {
+          console.log(`Donation amount ${donationAmount} does not match base amount ${baseAmount}. Donation ignored.`);
+          return;
+        }
+      }
+
+      // Enqueue donation 'count' times
+      for (let i = 0; i < count; i++) {
         this.rouletteGateway.emitDonation({
           nickname: donation.profile?.nickname?? "익명",
           amount: donation.extras.payAmount,
           message: donation.message,
-        })
-      } else if (!settings.isActive) {
-        console.log('Roulette is currently disabled. Donation ignored.');
+        });
       }
+      console.log(`Enqueued ${count} roulette(s) for ${donation.profile?.nickname ?? "익명"}`);
     })
 
     chzzkChat.connect();

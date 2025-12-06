@@ -302,6 +302,17 @@
     // checkNotice();
   }
 </script>
+<div id="queueDisplay" class="queue-display hidden">
+  <div class="queue-header">🎰 룰렛 대기열</div>
+  <div class="queue-current">
+    <div class="queue-section-title">진행 중</div>
+    <div id="currentUser" class="queue-current-user">-</div>
+  </div>
+  <div class="queue-waiting">
+    <div class="queue-section-title">대기 중 (<span id="queueCount">0</span>명)</div>
+    <div id="queueList" class="queue-list"></div>
+  </div>
+</div>
 <div id="resultDisplay" class="result-display hidden">
   <div class="result-content">
     <div class="result-header">🎉 당첨 🎉</div>

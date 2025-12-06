@@ -19,7 +19,6 @@ const socket = io('http://localhost:3000/roulette');
 // RouletteManager 세팅
 const manager = RouletteManager.instance;
 manager.onStartRoulette = async (job) => {
-
     function shuffle(array: Array<any>) {
         let currentIndex = array.length;
 
@@ -48,14 +47,22 @@ manager.onStartRoulette = async (job) => {
     roulette.start();
 
     // 여기서 roulette이 끝났다는 걸 감지할 방법이 필요 — 예: roulette 이벤트 리스너 또는 Promise 래핑
-    return new Promise<void>((resolve) => {
-        roulette.addEventListener('goal', () => {
-            resolve();
+    return new Promise<string>((resolve) => {
+        roulette.addEventListener('goal', (goal) => {
+            const prize = (goal as any).detail.winner;
+            console.log('Roulette goal reached:', prize);
+            resolve(prize);
         });
     });
 };
 
 manager.onShowResult = (job, result) => {
+    // "꽝"일 경우 결과 표시 생략
+    if (result === "꽝") {
+        console.log('Result is "꽝", skipping result display');
+        return;
+    }
+
     const resultDisplay = document.getElementById('resultDisplay');
     const resultPrize = resultDisplay?.querySelector('.result-prize');
     const resultDonor = resultDisplay?.querySelector('.result-donor');
@@ -79,9 +86,57 @@ manager.onClearScreen = () => {
         resultDisplay.classList.add('hidden');
     }
 }
-// 필요하다면 onClearScreen 정의
+
+// Queue update callback
+manager.onQueueUpdate = () => {
+    updateQueueDisplay();
+}
+
+function updateQueueDisplay() {
+    const currentJob = manager.getCurrentJob();
+    const queue = manager.getQueue();
+    const queueDisplayEl = document.getElementById('queueDisplay');
+
+    // Show/hide queue display based on whether there's activity
+    const hasActivity = currentJob !== null || queue.length > 0;
+    if (queueDisplayEl) {
+        if (hasActivity) {
+            queueDisplayEl.classList.remove('hidden');
+        } else {
+            queueDisplayEl.classList.add('hidden');
+        }
+    }
+
+    // Update current user
+    const currentUserEl = document.getElementById('currentUser');
+    if (currentUserEl) {
+        currentUserEl.textContent = currentJob ? currentJob.donation.nickname : '-';
+    }
+
+    // Update queue count
+    const queueCountEl = document.getElementById('queueCount');
+    if (queueCountEl) {
+        queueCountEl.textContent = queue.length.toString();
+    }
+
+    // Update queue list
+    const queueListEl = document.getElementById('queueList');
+    if (queueListEl) {
+        queueListEl.innerHTML = '';
+        queue.forEach((job, index) => {
+            const queueItem = document.createElement('div');
+            queueItem.className = 'queue-item';
+            queueItem.innerHTML = `
+                <span class="queue-item-number">${index + 1}</span>
+                <span class="queue-item-name">${job.donation.nickname}</span>
+            `;
+            queueListEl.appendChild(queueItem);
+        });
+    }
+}
 
 manager.init();
+updateQueueDisplay();
 
 // WebSocket event → 큐에 넣기
 socket.on('donation', (donation: { nickname: string; amount: number; message: string }) => {
