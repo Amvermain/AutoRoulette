@@ -15,7 +15,6 @@ services:
       - CHANNEL_ID=${CHANNEL_ID}
     volumes:
       - ./data:/app/data
-      - ./roulette-backend/roulette.db:/app/roulette.db  # ✅ DB만 바인드 마운트
     restart: unless-stopped
     networks:
       - roulette-network
