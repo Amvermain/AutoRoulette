@@ -16,7 +16,7 @@ import { join } from 'path';
     }),
     TypeOrmModule.forRoot({
       type: 'better-sqlite3',
-      database: 'roulette.db',
+      database: 'data/roulette.db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
