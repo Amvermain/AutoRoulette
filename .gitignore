@@ -4,7 +4,7 @@
 # Database
 *.db
 *.db-journal
-data/
+./data/
 
 # Node modules
 node_modules/
